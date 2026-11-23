@@ -16,7 +16,39 @@ body[data-theme="light"] .music-upload-box{background:#f8fafc;border-color:#c5d0
 body[data-theme="light"] .pill{background:#e5edf8;color:#334155}
 body[data-theme="light"] .music-source{border-color:#e2e8f0}
 body[data-theme="light"] footer{color:#64748b}
-@media(max-width:600px){.header-row{align-items:flex-start;flex-direction:column}.theme-choice{align-self:flex-start}}</style></head><body><header><div class="header-row"><div><h1>Motion Creator Studio <span class="pill">AI 動態影片工作室</span></h1><small>不限料理題材 · 多片段時間軸 · 動態字幕 · 音樂 · 本機影片匯出</small></div><label class="theme-choice">外觀 <select id="themeMode" class="theme-toggle" aria-label="選擇外觀"><option value="auto">自動</option><option value="light">淺色</option><option value="dark">深色</option></select></label></div></header><main class="wrap"><section><div class="panel"><h2>專案設定</h2><div class="line"><label>專案名稱 <input id="project" type="text" value="奶油蒜香義大利麵" style="width:240px"></label><label>比例 <select id="ratio"><option value="9:16">9:16 直式</option><option value="16:9">16:9 橫式</option><option value="1:1">1:1 方形</option></select></label></div><div class="line"><label>輸出解析度 <select id="quality"><option value="720">HD 720p</option><option value="1080" selected>Full HD 1080p</option><option value="1440">2K / QHD 1440p</option><option value="2160">4K UHD 2160p</option></select></label><span class="pill" id="total">總長 15 秒</span><span class="pill" id="count">3 個片段</span></div><p class="note">每段可設定 5～60 秒（每 5 秒一級）；片段數量不設硬性上限，總長度取決於裝置記憶體、瀏覽器及匯出效能。原影片不足時可選擇「循環播放」或「停留最後一格」。若需要新的真實動作，請匯入較長的 AI 影片。</p></div><div class="panel"><div class="line" style="justify-content:space-between"><h2 style="margin:0">影片片段與字幕</h2><button id="add">＋ 新增片段</button></div><div id="clips"></div></div><div class="panel music-panel"><h2>背景音樂與音訊混音</h2>
+@media(max-width:600px){.header-row{align-items:flex-start;flex-direction:column}.theme-choice{align-self:flex-start}}header{position:relative;z-index:50;overflow:visible}
+.theme-picker{position:relative;z-index:1000;flex:0 0 auto}
+.theme-menu-trigger{display:flex;align-items:center;justify-content:space-between;gap:14px;min-width:158px;padding:10px 13px;border:1px solid #64748b;border-radius:10px;background:#26384f;color:#f8fafc;font-size:14px;cursor:pointer}
+.theme-menu-trigger:hover{background:#334155}
+.theme-menu-trigger strong{font-weight:700;color:#fff}
+.theme-caret{font-size:12px;color:inherit}
+.theme-menu{position:absolute;top:calc(100% + 8px);right:0;width:232px;padding:7px;border:1px solid #475569;border-radius:12px;background:#171f2e;box-shadow:0 14px 34px rgba(0,0,0,.32);z-index:9999}
+.theme-menu[hidden]{display:none!important}
+.theme-option{display:flex;align-items:center;gap:10px;width:100%;padding:11px 10px;border:0;border-radius:8px;background:transparent;color:#f1f5f9;text-align:left;cursor:pointer}
+.theme-option:hover,.theme-option[aria-checked="true"]{background:#26384f}
+.theme-option-icon{width:24px;text-align:center;font-size:17px}
+.theme-option-copy{display:flex;flex:1;flex-direction:column;gap:2px}
+.theme-option-copy strong{font-size:14px}
+.theme-option-copy small{font-size:11px;color:#9ca3af}
+.theme-option-check{opacity:0;color:#93c5fd;font-weight:700}
+.theme-option[aria-checked="true"] .theme-option-check{opacity:1}
+body[data-theme="light"] .theme-menu-trigger{background:#fff;color:#172033;border-color:#c5d0df}
+body[data-theme="light"] .theme-menu-trigger strong{color:#172033}
+body[data-theme="light"] .theme-menu{background:#fff;border-color:#cbd5e1;box-shadow:0 14px 34px rgba(15,23,42,.16)}
+body[data-theme="light"] .theme-option{color:#172033}
+body[data-theme="light"] .theme-option:hover,body[data-theme="light"] .theme-option[aria-checked="true"]{background:#eef4fb}
+body[data-theme="light"] .theme-option-copy small{color:#64748b}
+body[data-theme="light"] .theme-option-check{color:#2563eb}
+@media(max-width:600px){.header-row{align-items:flex-start;flex-direction:column}.theme-picker{align-self:flex-start}}
+</style></head><body><header><div class="header-row"><div><h1>Motion Creator Studio <span class="pill">AI 動態影片工作室</span></h1><small>不限料理題材 · 多片段時間軸 · 動態字幕 · 音樂 · 本機影片匯出</small></div><div class="theme-picker" id="themePicker">
+<button id="themeMenuButton" class="theme-menu-trigger" type="button" aria-haspopup="menu" aria-expanded="false">
+<span>外觀</span><strong id="themeMenuCurrent">自動</strong><span class="theme-caret" aria-hidden="true">▾</span>
+</button>
+<div id="themeMenu" class="theme-menu" role="menu" aria-label="選擇外觀" hidden>
+<button type="button" class="theme-option" data-theme-choice="auto" role="menuitemradio" aria-checked="true"><span class="theme-option-icon">◐</span><span class="theme-option-copy"><strong>自動</strong><small>跟隨裝置系統設定</small></span><span class="theme-option-check">✓</span></button>
+<button type="button" class="theme-option" data-theme-choice="light" role="menuitemradio" aria-checked="false"><span class="theme-option-icon">☀</span><span class="theme-option-copy"><strong>淺色</strong><small>明亮白色介面</small></span><span class="theme-option-check">✓</span></button>
+<button type="button" class="theme-option" data-theme-choice="dark" role="menuitemradio" aria-checked="false"><span class="theme-option-icon">☾</span><span class="theme-option-copy"><strong>深色</strong><small>深色工作室介面</small></span><span class="theme-option-check">✓</span></button>
+</div></div></div></header><main class="wrap"><section><div class="panel"><h2>專案設定</h2><div class="line"><label>專案名稱 <input id="project" type="text" value="奶油蒜香義大利麵" style="width:240px"></label><label>比例 <select id="ratio"><option value="9:16">9:16 直式</option><option value="16:9">16:9 橫式</option><option value="1:1">1:1 方形</option></select></label></div><div class="line"><label>輸出解析度 <select id="quality"><option value="720">HD 720p</option><option value="1080" selected>Full HD 1080p</option><option value="1440">2K / QHD 1440p</option><option value="2160">4K UHD 2160p</option></select></label><span class="pill" id="total">總長 15 秒</span><span class="pill" id="count">3 個片段</span></div><p class="note">每段可設定 5～60 秒（每 5 秒一級）；片段數量不設硬性上限，總長度取決於裝置記憶體、瀏覽器及匯出效能。原影片不足時可選擇「循環播放」或「停留最後一格」。若需要新的真實動作，請匯入較長的 AI 影片。</p></div><div class="panel"><div class="line" style="justify-content:space-between"><h2 style="margin:0">影片片段與字幕</h2><button id="add">＋ 新增片段</button></div><div id="clips"></div></div><div class="panel music-panel"><h2>背景音樂與音訊混音</h2>
 <p class="note">先從熱門音樂來源挑選，或直接上傳自己的音樂檔。平台連結會開啟音樂網站，不會自動下載歌曲；請逐曲確認商用授權。</p>
 <div class="music-feature-head"><strong>熱門音樂資料庫</strong><span class="pill">快速前往</span></div>
 <div class="featured-music">
@@ -36,25 +68,54 @@ body[data-theme="light"] footer{color:#64748b}
 <p class="note">音訊會分別控制背景音樂與影片原音，並加入動態壓縮降低爆音風險。音量增益不等於喇叭實際響度。</p></div></section><section><div class="panel"><h2>即時預覽</h2><div class="preview"><canvas id="canvas" width="540" height="960"></canvas></div><div class="line"><span id="clock">00:00 / 00:15</span><input type="range" id="seek" min="0" max="15" step="0.05" value="0" style="flex:1"></div><div class="actions"><button id="play">▶ 播放</button><button class="secondary" id="pause">Ⅱ 暫停</button><button class="secondary" id="reset">↺ 重播</button></div></div><div class="panel"><h2>影片匯出</h2><p class="note">直接在本機瀏覽器渲染合成，無須上傳影片到伺服器。優先使用瀏覽器支援的 MP4 錄製格式；不支援時輸出 WebM。為保持聲畫同步，合成需要實際播放完整影片時間。</p><button id="export">合成並下載影片</button><div style="margin-top:12px"><progress id="progress" value="0" max="100"></progress></div><p class="status" id="status">等待匯入影片。</p></div><div class="panel"><h2>未來可擴充的製作類型</h2><div class="line"><span class="pill">食譜料理</span><span class="pill">3D 動畫</span><span class="pill">產品廣告</span><span class="pill">課程教學</span><span class="pill">短影音故事</span></div><p class="note">這個版本是本機剪輯與合成工作室，不會自行呼叫 Kling AI 或產生新的 AI 動態影片。</p></div></section></main><footer>Motion Creator Studio · Local browser edition</footer>
 <script>
 
-// Appearance selector: Auto follows device preference; Light and Dark are user choices.
-(function initTheme(){
+// Appearance dropdown: Auto follows system preference; Light and Dark are explicit choices.
+(function initThemeMenu(){
  const modes=['auto','light','dark'];
+ const labels={auto:'自動',light:'淺色',dark:'深色'};
  const media=window.matchMedia?window.matchMedia('(prefers-color-scheme: light)'):null;
+ const picker=document.getElementById('themePicker');
+ const trigger=document.getElementById('themeMenuButton');
+ const menu=document.getElementById('themeMenu');
+ const current=document.getElementById('themeMenuCurrent');
+ const options=menu?Array.from(menu.querySelectorAll('[data-theme-choice]')):[];
  let mode='auto';
  try{mode=localStorage.getItem('motionCreatorTheme')||'auto'}catch(e){}
  if(!modes.includes(mode))mode='auto';
- const selector=document.getElementById('themeMode');
+ const closeMenu=()=>{
+   if(!menu||!trigger)return;
+   menu.hidden=true;
+   trigger.setAttribute('aria-expanded','false');
+ };
  const apply=()=>{
    const effective=mode==='auto'?(media&&media.matches?'light':'dark'):mode;
    document.body.dataset.theme=effective;
    document.documentElement.style.colorScheme=effective;
-   if(selector)selector.value=mode;
+   if(current)current.textContent=labels[mode];
+   options.forEach(option=>{
+     option.setAttribute('aria-checked',String(option.dataset.themeChoice===mode));
+   });
  };
- if(selector)selector.addEventListener('change',()=>{
-   mode=selector.value;
-   try{localStorage.setItem('motionCreatorTheme',mode)}catch(e){}
-   apply();
- });
+ if(trigger&&menu){
+   trigger.addEventListener('click',()=>{
+     const willOpen=menu.hidden;
+     menu.hidden=!willOpen;
+     trigger.setAttribute('aria-expanded',String(willOpen));
+   });
+   options.forEach(option=>option.addEventListener('click',()=>{
+     const next=option.dataset.themeChoice;
+     if(!modes.includes(next))return;
+     mode=next;
+     try{localStorage.setItem('motionCreatorTheme',mode)}catch(e){}
+     apply();
+     closeMenu();
+   }));
+   document.addEventListener('click',event=>{
+     if(picker&&!picker.contains(event.target))closeMenu();
+   });
+   document.addEventListener('keydown',event=>{
+     if(event.key==='Escape')closeMenu();
+   });
+ }
  if(media){
    if(media.addEventListener)media.addEventListener('change',()=>{if(mode==='auto')apply()});
    else if(media.addListener)media.addListener(()=>{if(mode==='auto')apply()});
