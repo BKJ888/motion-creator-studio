@@ -105,6 +105,19 @@ body[data-theme="light"] .clip-audio-field label,body[data-theme="light"] .clip-
 body[data-theme="light"] .subtitle-style-panel{background:#f8fafc;border-color:#d8e0eb}
 body[data-theme="light"] .subtitle-style-field,body[data-theme="light"] .subtitle-style-toggle{color:#334155}
 body[data-theme="light"] .subtitle-style-field input[type=color]{background:#fff;border-color:#c5d0df}
+
+.subtitle-position-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(180px,.8fr);gap:14px;align-items:end;margin-top:14px;padding-top:13px;border-top:1px solid #3b4a60}
+.subtitle-position-presets{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.subtitle-position-label{font-size:13px;color:#cbd5e1;margin-right:3px}
+.subtitle-position-presets button{padding:8px 12px}
+.subtitle-position-presets button.active{background:#2563eb;color:#fff}
+.subtitle-position-slider{gap:7px}
+.subtitle-position-slider input{width:100%}
+#canvas{cursor:grab;touch-action:none}
+#canvas:active{cursor:grabbing}
+body[data-theme="light"] .subtitle-position-tools{border-color:#d8e0eb}
+body[data-theme="light"] .subtitle-position-label{color:#334155}
+@media(max-width:520px){.subtitle-position-tools{grid-template-columns:1fr}}
 </style></head><body><header><div class="header-row"><div><h1>Motion Creator Studio <span class="pill">AI 動態影片工作室</span></h1><small>不限料理題材 · 多片段時間軸 · 動態字幕 · 音樂 · 本機影片匯出</small></div><div class="theme-picker" id="themePicker">
 <button id="themeMenuButton" class="theme-menu-trigger" type="button" aria-haspopup="menu" aria-expanded="false">
 <span>外觀</span><strong id="themeMenuCurrent">自動</strong><span class="theme-caret" aria-hidden="true">▾</span>
@@ -142,6 +155,18 @@ body[data-theme="light"] .subtitle-style-field input[type=color]{background:#fff
   </label>
   <label class="subtitle-style-toggle"><input id="subtitleBgEnabled" type="checkbox" checked> 暫時套用字幕背景色</label>
  </div>
+ <div class="subtitle-position-tools">
+  <div class="subtitle-position-presets">
+   <span class="subtitle-position-label">字幕位置</span>
+   <button type="button" class="secondary" data-subtitle-position="15">上方</button>
+   <button type="button" class="secondary" data-subtitle-position="50">中間</button>
+   <button type="button" class="secondary active" data-subtitle-position="85">下方</button>
+  </div>
+  <label class="subtitle-style-field subtitle-position-slider">垂直位置 <span><b id="subtitlePositionLabel">85%</b></span>
+   <input id="subtitlePositionY" type="range" min="8" max="92" step="1" value="85">
+  </label>
+ </div>
+ <p class="note">可以點選上方／中間／下方快速定位，也可以直接在右側預覽畫面按住字幕上下拖曳，微調到想要的位置。位置設定會套用到所有片段及最終輸出。</p>
  <p class="note">字幕樣式會套用到所有片段的字幕，並顯示於預覽及匯出成品。取消勾選即可暫時移除背景色；這些設定不會修改原始影片。</p>
 </div>
 <div class="panel music-panel"><h2>背景音樂與音訊混音</h2>
@@ -220,7 +245,7 @@ body[data-theme="light"] .subtitle-style-field input[type=color]{background:#fff
 })();
 
 const $=id=>document.getElementById(id), canvas=$('canvas'),ctx=canvas.getContext('2d');let clips=[],position=0,playing=false,exporting=false,lastTick=0,raf=0,audioCtx=null,audioDest=null,videoBus=null,musicBus=null,limiter=null,activeSources=[],musicUrl=null,mediaAudio=null,exportRecorder=null,audioGraphConnected=false;
-const subtitleStyle={fontFamily:'Microsoft JhengHei',fontSize:100,textColor:'#ffffff',backgroundColor:'#000000',backgroundOpacity:65,backgroundEnabled:true};
+const subtitleStyle={fontFamily:'Microsoft JhengHei',fontSize:100,textColor:'#ffffff',backgroundColor:'#000000',backgroundOpacity:65,backgroundEnabled:true,yPct:85};
 function makeClip(){return {id:crypto.randomUUID(),file:null,url:null,video:null,audioSource:null,audioGain:null,duration:5,sourceDuration:null,speed:1,caption:'輸入這段影片的字幕',mode:'loop',framing:{mode:'cover',x:50,y:50,zoom:100},audioEnabled:true,audioVolume:100,fadeIn:0,fadeOut:0};}
 for(let i=0;i<3;i++){let c=makeClip();c.caption=['奶油入鍋，炒出蒜香','放入麵條，均勻拌炒','美味料理，完成！'][i];clips.push(c)}
 function total(){return clips.reduce((s,c)=>s+c.duration,0)}
@@ -378,7 +403,7 @@ function draw(){const w=canvas.width,h=canvas.height;ctx.fillStyle='#090c14';ctx
  const scale=baseScale*((f.zoom||100)/100),sw=v.videoWidth*scale,sh=v.videoHeight*scale;
  const dx=(w-sw)*((f.x??50)/100),dy=(h-sh)*((f.y??50)/100);
  ctx.drawImage(v,dx,dy,sw,sh);
-}else{ctx.textAlign='center';ctx.fillStyle='#9ca3af';ctx.font=`${Math.round(w*.045)}px system-ui`;ctx.fillText(c.file?'影片載入中…':'請先匯入鏡頭 '+(i+1)+' 的影片',w/2,h/2)}const grad=ctx.createLinearGradient(0,h*.75,0,h);grad.addColorStop(0,'transparent');grad.addColorStop(1,'rgba(0,0,0,.5)');ctx.fillStyle=grad;ctx.fillRect(0,h*.7,w,h*.3);if(c.caption)roundedText(c.caption,w/2,h*.85,w*.78);// Preview-only playback indicator: never burn the blue timeline into the exported video.
+}else{ctx.textAlign='center';ctx.fillStyle='#9ca3af';ctx.font=`${Math.round(w*.045)}px system-ui`;ctx.fillText(c.file?'影片載入中…':'請先匯入鏡頭 '+(i+1)+' 的影片',w/2,h/2)}const grad=ctx.createLinearGradient(0,h*.75,0,h);grad.addColorStop(0,'transparent');grad.addColorStop(1,'rgba(0,0,0,.5)');ctx.fillStyle=grad;ctx.fillRect(0,h*.7,w,h*.3);if(c.caption)roundedText(c.caption,w/2,h*(subtitleStyle.yPct/100),w*.78);// Preview-only playback indicator: never burn the blue timeline into the exported video.
 if(!exporting){ctx.fillStyle='#60a5fa';ctx.fillRect(0,h-7,w*position/Math.max(total(),1),7)}updateClock()}
 function syncVideos(){
  const {c,local}=locate(Math.min(position,Math.max(0,total()-.00001)));
@@ -537,6 +562,18 @@ function syncSubtitleStyleControls(){
  $('subtitleTextColor').value=subtitleStyle.textColor;$('subtitleBgColor').value=subtitleStyle.backgroundColor;
  $('subtitleBgOpacity').value=subtitleStyle.backgroundOpacity;$('subtitleBgOpacityLabel').textContent=subtitleStyle.backgroundOpacity+'%';
  $('subtitleBgEnabled').checked=subtitleStyle.backgroundEnabled;
+ syncSubtitlePositionControls();
+}
+function syncSubtitlePositionControls(){
+ const y=Math.round(subtitleStyle.yPct);
+ $('subtitlePositionY').value=y;$('subtitlePositionLabel').textContent=y+'%';
+ document.querySelectorAll('[data-subtitle-position]').forEach(button=>{
+  button.classList.toggle('active',Number(button.dataset.subtitlePosition)===y);
+ });
+}
+function setSubtitleY(value){
+ subtitleStyle.yPct=Math.max(8,Math.min(92,Math.round(Number(value)||85)));
+ syncSubtitlePositionControls();draw();
 }
 function updateSubtitleStyleFromControls(){
  subtitleStyle.fontFamily=$('subtitleFont').value;subtitleStyle.fontSize=+$('subtitleFontSize').value;
@@ -548,8 +585,36 @@ function updateSubtitleStyleFromControls(){
  const el=$(id);el.addEventListener(el.type==='range'?'input':'change',updateSubtitleStyleFromControls);
 });
 $('resetSubtitleStyle').onclick=()=>{
- Object.assign(subtitleStyle,{fontFamily:'Microsoft JhengHei',fontSize:100,textColor:'#ffffff',backgroundColor:'#000000',backgroundOpacity:65,backgroundEnabled:true});
+ Object.assign(subtitleStyle,{fontFamily:'Microsoft JhengHei',fontSize:100,textColor:'#ffffff',backgroundColor:'#000000',backgroundOpacity:65,backgroundEnabled:true,yPct:85});
  syncSubtitleStyleControls();draw();
 };
+$('subtitlePositionY').addEventListener('input',e=>setSubtitleY(e.target.value));
+document.querySelectorAll('[data-subtitle-position]').forEach(button=>{
+ button.addEventListener('click',()=>setSubtitleY(button.dataset.subtitlePosition));
+});
+let subtitleDragging=false;
+canvas.addEventListener('pointerdown',e=>{
+ const clip=locate(Math.min(position,Math.max(0,total()-.00001))).c;
+ if(!clip.caption||exporting)return;
+ const rect=canvas.getBoundingClientRect();
+ const pointerY=(e.clientY-rect.top)/rect.height*canvas.height;
+ const captionY=canvas.height*(subtitleStyle.yPct/100);
+ if(Math.abs(pointerY-captionY)>canvas.height*.11)return;
+ subtitleDragging=true;canvas.setPointerCapture(e.pointerId);canvas.style.cursor='grabbing';
+ e.preventDefault();
+});
+canvas.addEventListener('pointermove',e=>{
+ if(!subtitleDragging)return;
+ const rect=canvas.getBoundingClientRect();
+ const y=(e.clientY-rect.top)/rect.height*100;
+ setSubtitleY(y);
+});
+const stopSubtitleDrag=e=>{
+ if(!subtitleDragging)return;
+ subtitleDragging=false;canvas.style.cursor='grab';
+ if(e&&canvas.hasPointerCapture(e.pointerId))canvas.releasePointerCapture(e.pointerId);
+};
+canvas.addEventListener('pointerup',stopSubtitleDrag);
+canvas.addEventListener('pointercancel',stopSubtitleDrag);
 syncSubtitleStyleControls();renderClips();resize();
 </script></body></html>
